@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+<body>
+<h1> Welcome to login page</h1>
+<hr>
+
+<span th:text="${signupSuccess}" style="color: green"></span>
+<span th:text="${loginError}" style="color: red;"></span>
+<form method="post" action="/loginPost">
+
+    Username: <input type="text" name="username">
+    Password: <input type="password" name="password">
+    <input type="submit" value="Login">
+
+</form>
+</body>
+</html>
