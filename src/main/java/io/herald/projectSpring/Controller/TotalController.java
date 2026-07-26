@@ -3,6 +3,7 @@ package io.herald.projectSpring.Controller;
 import io.herald.projectSpring.Model.UserTable;
 import io.herald.projectSpring.Repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,6 +57,11 @@ public class TotalController {
 
             List<UserTable> userList = uRepo.findAll();
             m.addAttribute("userList", userList);
+
+            HttpSession session = request.getSession();
+            //Session revolves around the http requests, we are trying to get a running session with the help of above code.
+            //After a successful signing, a username is provided a session account to their username
+            session.setAttribute("username", username);
             return "homePage";
         }
 
@@ -83,5 +89,21 @@ public class TotalController {
 
         m.addAttribute("signupSuccess", "Successfully Signed Up. Please login");
         return "loginPage";
+    }
+
+    @GetMapping("/home")
+    public String homePage(HttpServletRequest request, Model m) {
+
+        HttpSession session = request.getSession();
+
+        if (session.getAttribute("username")==null) {
+
+            m.addAttribute("message", "You are not logged in. Please login!!");
+            return "loginPage";
+        }
+
+        List<UserTable> userList = uRepo.findAll();
+        m.addAttribute("userList", userList);
+        return "homePage";
     }
 }
