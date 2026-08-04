@@ -5,6 +5,8 @@ import io.herald.projectSpring.Repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
@@ -21,6 +23,8 @@ public class TotalController {
     //Autowired helps in dependency injection, provides all the required functions and API's to a class/interface obj no new keyword is  required
     @Autowired
     private UserRepository uRepo;
+    @Autowired
+    private JavaMailSender mailSender;
 
     @GetMapping("/")
     public String firstPage() {
@@ -75,10 +79,11 @@ public class TotalController {
     @PostMapping("/signup")
     public String signupPost(HttpServletRequest request, Model m) {
 
-        String username, password;
+        String username, password, email;
 
         username = request.getParameter("username");
         password = request.getParameter("password");
+        email = request.getParameter("email");
 
         String hashPassword= DigestUtils.md5DigestAsHex(password.getBytes());
         UserTable ut = new UserTable();
@@ -86,6 +91,14 @@ public class TotalController {
         ut.setUserName(username);
 
         uRepo.save(ut);
+
+        //Mail Sender
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Signed Up Successfully");
+        message.setText("Welcome to the club:" + username + "!!!");
+//      mailSender.send(message);
+
 
         m.addAttribute("signupSuccess", "Successfully Signed Up. Please login");
         return "loginPage";
