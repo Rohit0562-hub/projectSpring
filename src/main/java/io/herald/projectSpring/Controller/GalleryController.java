@@ -44,7 +44,6 @@ public class GalleryController {
         m.addAttribute("totalImages", imgRepo.findAll());
         return "galleryPage";
     }
-
     @PostMapping("/galleryPost")
     public String galleryPost(@RequestParam("imgFile")MultipartFile imgFile, Model m) {
 

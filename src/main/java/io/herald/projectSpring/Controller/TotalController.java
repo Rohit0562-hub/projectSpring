@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
@@ -25,6 +26,8 @@ public class TotalController {
     private UserRepository uRepo;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/")
     public String firstPage() {
@@ -57,25 +60,30 @@ public class TotalController {
 
         //RepositoryLogin
 
-        if(uRepo.existsByUserNameAndPassword(username, hashPassword)) {
+//        if(uRepo.existsByUserNameAndPassword(username, hashPassword)) {
 
-            List<UserTable> userList = uRepo.findAll();
-            m.addAttribute("userList", userList);
+        try {
+            UserTable user = uRepo.findByUsername(username);
 
-            HttpSession session = request.getSession();
-            //Session revolves around the http requests, we are trying to get a running session with the help of above code.
-            //After a successful signing, a username is provided a session account to their username
-            session.setAttribute("username", username);
-            return "homePage";
+            if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+
+                List<UserTable> userList = uRepo.findAll();
+                m.addAttribute("userList", userList);
+
+                HttpSession session = request.getSession();
+                //Session revolves around the http requests, we are trying to get a running session with the help of above code.
+                //After a successful signing, a username is provided a session account to their username
+                session.setAttribute("username", username);
+                return "homePage";
+            }
+
+        } catch (Exception e) {
+            //message lai model ko attribute bhaninxa
+            m.addAttribute("message", "Too many Username!!!");
         }
 
-
-        //message lai model ko attribute bhaninxa
-        m.addAttribute("loginError", "Username or password incorrect");
         return "loginPage";
-
     }
-
     @PostMapping("/signup")
     public String signupPost(HttpServletRequest request, Model m) {
 
@@ -85,10 +93,12 @@ public class TotalController {
         password = request.getParameter("password");
         email = request.getParameter("email");
 
-        String hashPassword= DigestUtils.md5DigestAsHex(password.getBytes());
+        //String hashPassword= DigestUtils.md5DigestAsHex(password.getBytes());
+
+        String hashPassword = passwordEncoder.encode(password);
         UserTable ut = new UserTable();
         ut.setPassword(hashPassword);
-        ut.setUserName(username);
+        ut.setUsername(username);
 
         uRepo.save(ut);
 
