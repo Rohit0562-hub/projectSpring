@@ -24,7 +24,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/editUser")
+    @PostMapping("/editUser")
     public String editUserPost(@RequestParam("id") int id, Model m) {
 
         UserTable user = uRepo.getById(id);

@@ -15,7 +15,7 @@
 <form method="post" action="updateUser">
 
     Id:<input type="text" th:value="${user.getId()}" name="id" readonly><br><br>
-    Username:<input type="text" th:value="${user.getUserName()}" name="userName"><br><br>
+    Username:<input type="text" th:value="${user.getUsername()}" name="username"><br><br>
     Password:<input type="hidden" th:value="${user.getPassword()}" name="password">
     <input type="submit" value="Update User">
 

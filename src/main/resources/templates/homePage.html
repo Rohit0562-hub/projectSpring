@@ -21,7 +21,7 @@
 
     <tr th:each="user:${userList}">
         <td th:text="${user.getId()}"></td>
-        <td th:text="${user.getUserName()}"></td>
+        <td th:text="${user.getUsername()}"></td>
         <td>
 
             <form method="post" action="editUser">
